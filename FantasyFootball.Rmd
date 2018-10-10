@@ -1,0 +1,117 @@
+---
+title: "Fantasy Football 2018"
+author: "Conner Tolley"
+date: "October 8, 2018"
+output: 
+  html_document:
+    number_sections: true
+    toc: true
+    fig_width: 7
+    fig_height: 4.5
+    theme: readable
+    highlight: tango
+---
+
+# Introduction
+
+This is a practice markdown notebook to analyze fantasy football data for the 2018 season. The data can be found here https://www.pro-football-reference.com/years/2018/fantasy.htm. 
+
+There are three parts to my script as follows:
+
+* Feature engineering
+* Missing value imputation
+* Prediction!
+
+## Load and check data
+
+```{r, message=FALSE}
+# Load Packages
+
+library('ggplot2') # visualization
+library('ggthemes') # visualization
+library('scales') # visualization
+library('dplyr') # data manipulation
+library('mice') # imputation
+library('randomForest') # classification algorithm
+```
+Now that the packages are loaded, let's read in and take a peek at the data.
+
+
+```{r, message=FALSE, warning=FALSE}
+# Read the csv file. Skip the first row and use second row as headers for the data frame
+full <- read.csv('FantasyRankings2018.csv', stringsAsFactors = F, skip = 1)
+
+# Rename columns to more readable names
+full <- rename(full, Name = X, Team = Tm, Position = FantPos, Num = Rk, Games_Played = G, Games_Started = GS, Completed_Passing = Cmp, Attempts_Passing = Att, Yards_Passing = Yds, TD_Passing = TD, Ints_Passing = Int, Attempts_Rushing = Att.1, Yards_Rushing = Yds.1, Yards_Attempt_Rushing = Y.A, TD_Rushing = TD.1, Tgt_Rec = Tgt, Receptions = Rec, Yards_Rec = Yds.2, Yards_Per_Rec = Y.R, TD_Rec = TD.2, X2P_Made = X2PM, X2P_Passes = X2PP, Draft_Kings = DKPt, Fan_Duel = FDPt)
+
+# check data
+ str(full)
+ 
+ # Remove the nickname from the end of the Name column after the "\\"
+full$Name <- gsub("\\\\.*", "", full$Name)
+```
+
+## Teams
+
+Let's take a look at how the teams are doing with fantasy points.
+
+```{r}
+# Change Josh Gordon's team to New England
+
+
+# Filter out the players with no fantasy points
+full <- filter(full, PPR != "", FantPt != "", Team != '2TM')
+
+# Group by number of points per team and positions
+full <- 
+  full %>%
+  filter(Position != "") %>%
+  group_by(Team, Position) %>%
+  summarise(Total_Points = sum(PPR)) 
+
+# Rename team names to full name of team
+full$Team[which(full$Team == "ARI")] <- "Arizona"
+full$Team[which(full$Team == "BUF")] <- "Buffalo"
+full$Team[which(full$Team == "TEN")] <- "Tennessee"
+full$Team[which(full$Team == "WAS")] <- "Washington"
+full$Team[which(full$Team == "DAL")] <- "Dallas"
+full$Team[which(full$Team == "CHI")] <- "Chicago"
+full$Team[which(full$Team == "CAR")] <- "Carolina"
+full$Team[which(full$Team == "NYJ")] <- "New York Jets"
+full$Team[which(full$Team == "MIA")] <- "Miami"
+full$Team[which(full$Team == "SEA")] <- "Seattle"
+full$Team[which(full$Team == "CLE")] <- "Cleveland"
+full$Team[which(full$Team == "TAM")] <- "Tampa Bay"
+full$Team[which(full$Team == "DEN")] <- "Denver"
+full$Team[which(full$Team == "NYG")] <- "New York Giants"
+full$Team[which(full$Team == "SFO")] <- "San Francisco"
+full$Team[which(full$Team == "NWE")] <- "New England"
+full$Team[which(full$Team == "PHI")] <- "Philadelphia"
+full$Team[which(full$Team == "JAX")] <- "Jacksonville"
+full$Team[which(full$Team == "DET")] <- "Detroit"
+full$Team[which(full$Team == "HOU")] <- "Houston"
+full$Team[which(full$Team == "OAK")] <- "Oakland"
+full$Team[which(full$Team == "CIN")] <- "Cincinnati"
+full$Team[which(full$Team == "BAL")] <- "Baltimore"
+full$Team[which(full$Team == "GNB")] <- "Green Bay"
+full$Team[which(full$Team == "IND")] <- "Indinapolis"
+full$Team[which(full$Team == "MIN")] <- "Minnesota"
+full$Team[which(full$Team == "LAC")] <- "Los Angeles Chargers"
+full$Team[which(full$Team == "ATL")] <- "Atlanta"
+full$Team[which(full$Team == "PIT")] <- "Pittsburg"
+full$Team[which(full$Team == "KAN")] <- "Kansas City"
+full$Team[which(full$Team == "LAR")] <- "Los Angeles Rams"
+full$Team[which(full$Team == "NOR")] <- "New Orleans"
+
+# Print the result of the groupings
+full
+
+# Plot into a bar graph
+ggplot(data = full, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Teams") +
+  labs(title = "Team Points after Week 5 (ppr)") +
+  coord_flip() +
+  theme_few()
+
+```
