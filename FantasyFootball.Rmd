@@ -103,14 +103,68 @@ full$Team[which(full$Team == "KAN")] <- "Kansas City"
 full$Team[which(full$Team == "LAR")] <- "Los Angeles Rams"
 full$Team[which(full$Team == "NOR")] <- "New Orleans"
 
-# Print the result of the groupings
-full
-
 # Plot into a bar graph
 ggplot(data = full, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
   geom_bar(stat = "identity") +
   labs(x = "Teams") +
   labs(title = "Team Points after Week 5 (ppr)") +
+  coord_flip() +
+  theme_few()
+
+```
+
+Now We can look at some plots based on position and team.
+
+```{r}
+# Filter to just get the QBs
+fullQB <- 
+  full %>%
+  filter(Position == "QB")
+
+# Plot QBs into a bar graph
+ggplot(data = fullQB, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Teams") +
+  labs(title = "Quarterback Points after Week 5 (ppr)") +
+  coord_flip() +
+  theme_few()
+
+# Filter to just get the TEs
+fullTE <- 
+  full %>%
+  filter(Position == "TE")
+
+# Plot QBs into a bar graph
+ggplot(data = fullTE, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Teams") +
+  labs(title = "Tight End Points after Week 5 (ppr)") +
+  coord_flip() +
+  theme_few()
+
+# Filter to just get the RBs
+fullRB <- 
+  full %>%
+  filter(Position == "RB")
+
+# Plot QBs into a bar graph
+ggplot(data = fullRB, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Teams") +
+  labs(title = "Running Back Points after Week 5 (ppr)") +
+  coord_flip() +
+  theme_few()
+
+# Filter to just get the WRs
+fullWR <- 
+  full %>%
+  filter(Position == "WR")
+
+# Plot QBs into a bar graph
+ggplot(data = fullWR, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Teams") +
+  labs(title = "Wide Receiver Points after Week 5 (ppr)") +
   coord_flip() +
   theme_few()
 
