@@ -14,7 +14,7 @@ output:
 
 # Introduction
 
-This is a practice markdown notebook to analyze fantasy football data for the 2018 season. The data can be found here https://www.pro-football-reference.com/years/2018/fantasy.htm. 
+This is a practice markdown notebook to analyze fantasy football data for the 2018 season. The data can be found here https://www.pro-football-reference.com/years/2008/fantasy.htm. 
 
 There are three parts to my script as follows:
 
@@ -33,13 +33,22 @@ library('scales') # visualization
 library('dplyr') # data manipulation
 library('mice') # imputation
 library('randomForest') # classification algorithm
+
+# Source and the existing selenium helper file
+# source("SeleniumDataHelper.R")
 ```
 Now that the packages are loaded, let's read in and take a peek at the data.
 
 
 ```{r, message=FALSE, warning=FALSE}
-# Read the csv file. Skip the first row and use second row as headers for the data frame
-full <- read.csv('FantasyRankings2018.csv', stringsAsFactors = F, skip = 1)
+# Make the year a variable we can change
+YEAR <- "2010"
+
+# Get the file name based on the year we supply
+fileName <- sprintf("fantData%s.csv", YEAR)
+
+# Read the csv file
+full <- read.csv(fileName, stringsAsFactors = F)
 
 # Rename columns to more readable names
 full <- rename(full, Name = X, Team = Tm, Position = FantPos, Num = Rk, Games_Played = G, Games_Started = GS, Completed_Passing = Cmp, Attempts_Passing = Att, Yards_Passing = Yds, TD_Passing = TD, Ints_Passing = Int, Attempts_Rushing = Att.1, Yards_Rushing = Yds.1, Yards_Attempt_Rushing = Y.A, TD_Rushing = TD.1, Tgt_Rec = Tgt, Receptions = Rec, Yards_Rec = Yds.2, Yards_Per_Rec = Y.R, TD_Rec = TD.2, X2P_Made = X2PM, X2P_Passes = X2PP, Draft_Kings = DKPt, Fan_Duel = FDPt)
@@ -60,7 +69,7 @@ Let's take a look at how the teams are doing with fantasy points.
 
 
 # Filter out the players with no fantasy points
-full <- filter(full, PPR != "", FantPt != "", Team != '2TM')
+full <- filter(full, PPR != "", FantPt != "", Team != '2TM', Team != '3TM')
 
 # Group by number of points per team and positions
 full <- 
@@ -102,12 +111,14 @@ full$Team[which(full$Team == "PIT")] <- "Pittsburg"
 full$Team[which(full$Team == "KAN")] <- "Kansas City"
 full$Team[which(full$Team == "LAR")] <- "Los Angeles Rams"
 full$Team[which(full$Team == "NOR")] <- "New Orleans"
+full$Team[which(full$Team == "SDG")] <- "San Diego"
+full$Team[which(full$Team == "STL")] <- "St. Louis"
 
 # Plot into a bar graph
 ggplot(data = full, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
   geom_bar(stat = "identity") +
   labs(x = "Teams") +
-  labs(title = "Team Points after Week 5 (ppr)") +
+  labs(title = sprintf("Team Points for %s (ppr)", YEAR)) +
   coord_flip() +
   theme_few()
 
@@ -125,7 +136,7 @@ fullQB <-
 ggplot(data = fullQB, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
   geom_bar(stat = "identity") +
   labs(x = "Teams") +
-  labs(title = "Quarterback Points after Week 5 (ppr)") +
+  labs(title = sprintf("Quarterback Points for %s (ppr)", YEAR)) +
   coord_flip() +
   theme_few()
 
@@ -138,7 +149,7 @@ fullTE <-
 ggplot(data = fullTE, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
   geom_bar(stat = "identity") +
   labs(x = "Teams") +
-  labs(title = "Tight End Points after Week 5 (ppr)") +
+  labs(title = sprintf("Tight End Points for %s (ppr)", YEAR)) +
   coord_flip() +
   theme_few()
 
@@ -151,7 +162,7 @@ fullRB <-
 ggplot(data = fullRB, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
   geom_bar(stat = "identity") +
   labs(x = "Teams") +
-  labs(title = "Running Back Points after Week 5 (ppr)") +
+  labs(title = sprintf("Running Back Points for %s (ppr)", YEAR)) +
   coord_flip() +
   theme_few()
 
@@ -164,7 +175,7 @@ fullWR <-
 ggplot(data = fullWR, aes(x=reorder(Team, -Total_Points), y=Total_Points, fill=Position)) +
   geom_bar(stat = "identity") +
   labs(x = "Teams") +
-  labs(title = "Wide Receiver Points after Week 5 (ppr)") +
+  labs(title = sprintf("Wide Receiver Points for %s (ppr)", YEAR)) +
   coord_flip() +
   theme_few()
 
