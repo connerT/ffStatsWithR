@@ -2,7 +2,11 @@
 library(RSelenium)
 library(qdap)
 
-# getCsvDataWithSelenium()
+# Start local selenium server
+# You will need to start a local selenium server on port 444
+# Download the selenium server from https://www.seleniumhq.org/download/. Just get the latest version
+# Start the server with the commands "java -jar selenium-server-standalone-3.10.0.jar". Replace "3.10.0" with the version you downloaded.
+# Now you are ready to run this R script
 
 # Instantiate the remote driver
 remDr <- remoteDriver(remoteServerAddr = "localhost",
