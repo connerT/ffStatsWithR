@@ -48,7 +48,7 @@ csvData <- gsub(".*(Fantasy,Fantasy,Fantasy,Fantasy)", "", csvData)
 csvData <- sub("\n", "", csvData)
 
 # Save as a csv file
-write.table(csvData, file = "C:/Data Science/FF_R/fantData2008.csv", sep = ",",
+write.table(csvData, file = "C:/Data Science/FF_R/Data_Files/fantData2018.csv", sep = ",",
             col.names = FALSE,
             row.names = FALSE,
             quote = FALSE)
