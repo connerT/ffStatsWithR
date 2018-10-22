@@ -18,7 +18,7 @@ remDr$open()
 
 # Url to get the fantasy info
 FANTASY_URL <-
-  "https://www.pro-football-reference.com/years/2008/fantasy.htm"
+  "https://www.pro-football-reference.com/years/2018/fantasy.htm"
 
 # Navigate to the web page
 remDr$navigate(FANTASY_URL)
